@@ -31,6 +31,10 @@ kafka-status:
 
 .PHONY: dep-up
 dep-up: kafka-up
+	@echo "Waiting for Kafka to be ready..."
+	@sleep 5
+	@echo "Creating topic 'foo'..."
+	@docker exec kafka-1 /opt/kafka/bin/kafka-topics.sh --create --topic foo --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1 --if-not-exists 2>/dev/null || true
 
 .PHONY: dep-down
 dep-down: kafka-down
