@@ -18,6 +18,7 @@ func main() {
 		kgo.DialTimeout(5*time.Second),
 		kgo.ConsumerGroup("my-group-identifier"),
 		kgo.ConsumeTopics("foo"),
+		// kgo.AutoCommitMarks(),
 	)
 	if err != nil {
 		panic(err)
@@ -41,6 +42,7 @@ func main() {
 		fmt.Printf("record had a produce error while synchronously producing: %v\n", err)
 	}
 
+	var i int
 	for {
 		fetches := cl.PollFetches(ctx)
 		if errs := fetches.Errors(); len(errs) > 0 {
@@ -51,16 +53,25 @@ func main() {
 		for !iter.Done() {
 			record := iter.Next()
 			fmt.Println(string(record.Value), "from an iterator!")
+			i++
 		}
 
 		fetches.EachPartition(func(p kgo.FetchTopicPartition) {
 			for _, record := range p.Records {
 				fmt.Println(string(record.Value), "from range inside a callback!")
+				i++
 			}
 
 			p.EachRecord(func(record *kgo.Record) {
 				fmt.Println(string(record.Value), "from a second callback!")
+				i++
 			})
 		})
+
+		cl.CommitUncommittedOffsets(ctx)
+
+		if i >= 6 {
+			break
+		}
 	}
 }
