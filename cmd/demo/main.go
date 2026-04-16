@@ -13,14 +13,14 @@ import (
 )
 
 func main() {
-	println("service started")
+	fmt.Println("demo started")
 
 	seeds := []string{"localhost:9092"}
 	cl, err := kgo.NewClient(
 		kgo.SeedBrokers(seeds...),
 		kgo.DialTimeout(5*time.Second),
 		kgo.ConsumerGroup("my-group-identifier"),
-		kgo.InstanceID("unique-instance-id"), // статический ID
+		kgo.InstanceID("unique-instance-id"), // static ID
 		kgo.SessionTimeout(10*time.Second),
 		kgo.ConsumeTopics("foo"),
 	)
@@ -52,7 +52,8 @@ func main() {
 		fetches := cl.PollFetches(ctx)
 		if errs := fetches.Errors(); len(errs) > 0 {
 			fmt.Println("errors", errs)
-			return
+
+			break
 		}
 
 		iter := fetches.RecordIter()

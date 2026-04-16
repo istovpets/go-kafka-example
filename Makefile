@@ -35,6 +35,8 @@ dep-up: kafka-up
 	@sleep 7
 	@echo "Creating topic 'foo'..."
 	@docker exec kafka-1 /opt/kafka/bin/kafka-topics.sh --create --topic foo --bootstrap-server kafka-1:19092 --partitions 3 --replication-factor 1 --if-not-exists 2>/dev/null || true
+	@echo "Creating topic 'messages'..."
+	@docker exec kafka-1 /opt/kafka/bin/kafka-topics.sh --create --topic messages --bootstrap-server kafka-1:19092 --partitions 3 --replication-factor 1 --if-not-exists 2>/dev/null || true
 
 .PHONY: dep-down
 dep-down: kafka-down
